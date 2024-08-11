@@ -1,0 +1,27 @@
+name: build and push to dockerHub\
+
+on: 
+
+  push:
+    branches:
+      - main      
+  workflow_dispatch:
+
+jobs:
+  build_push:
+    name: image building by the Dockerfile 
+    runs-on: ubuntu-latest
+    steps: 
+      - name: checkout the repository code 
+        uses: actions/checkout@v4
+        with: 
+          clean: 'false'
+
+      - name: login to docker 
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: docker build image
+        run: docker build . --file Dockerfile --tag erezalon123/final-project-python:${{ github.run_number }}-${{ github.sha }}
+
+      - name: push to dockerHub 
+        run: docker push erezalon123/final-project-python:${{ github.run_number }}-${{ github.sha }}
